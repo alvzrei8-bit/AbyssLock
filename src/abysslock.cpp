@@ -470,6 +470,10 @@ Options parse_options(int argc, char** argv) {
     usage();
     throw std::runtime_error("missing input file");
   }
+  if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
+    usage();
+    std::exit(0);
+  }
   options.input = argv[1];
   for (int i = 2; i < argc; ++i) {
     const std::string argument = argv[i];
