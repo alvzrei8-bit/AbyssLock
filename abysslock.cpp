@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
@@ -21,7 +22,6 @@ struct Options {
   std::string input;
   std::string output;
   std::uint64_t seed = 0;
-  bool explicit_seed = false;
   bool mangle = true;
   bool anti_debug = true;
 };
@@ -460,46 +460,22 @@ std::string obfuscate(std::string_view source, const Options& options) {
 }
 
 void usage() {
-  std::cout << "AbyssLock Luau obfuscator\n";
-  std::cout << "usage: abysslock <input.luau> [-o output.luau] [--seed N] [--no-mangle] [--no-anti-debug]\n";
+  std::cout << "Luatrix Luau obfuscator\n";
+  std::cout << "usage: luatrix <input> <output>\n";
 }
 
 Options parse_options(int argc, char** argv) {
   Options options;
-  if (argc < 2) {
+  if (argc != 3) {
     usage();
-    throw std::runtime_error("missing input file");
-  }
-  if (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
-    usage();
-    std::exit(0);
+    throw std::runtime_error("expected exactly <input> <output>");
   }
   options.input = argv[1];
-  for (int i = 2; i < argc; ++i) {
-    const std::string argument = argv[i];
-    if (argument == "-o" && i + 1 < argc) {
-      options.output = argv[++i];
-    } else if (argument == "--seed" && i + 1 < argc) {
-      options.seed = std::stoull(argv[++i]);
-      options.explicit_seed = true;
-    } else if (argument == "--no-mangle") {
-      options.mangle = false;
-    } else if (argument == "--no-anti-debug") {
-      options.anti_debug = false;
-    } else if (argument == "--help" || argument == "-h") {
-      usage();
-      std::exit(0);
-    } else {
-      throw std::runtime_error("unknown argument: " + argument);
-    }
-  }
-  if (options.output.empty()) {
-    options.output = options.input + ".obfuscated.luau";
-  }
-  if (!options.explicit_seed) {
-    std::random_device source;
-    options.seed = (static_cast<std::uint64_t>(source()) << 32U) | source();
-  }
+  options.output = argv[2];
+  std::random_device source;
+  const auto now = static_cast<std::uint64_t>(
+      std::chrono::high_resolution_clock::now().time_since_epoch().count());
+  options.seed = (static_cast<std::uint64_t>(source()) << 32U) ^ source() ^ now;
   return options;
 }
 
@@ -511,7 +487,7 @@ int main(int argc, char** argv) {
     const std::string source = read_file(options.input);
     const std::string result = obfuscate(source, options);
     write_file(options.output, result);
-    std::cout << "AbyssLock wrote " << options.output << " using seed " << options.seed << "\n";
+    std::cout << "Luatrix wrote " << options.output << "\n";
     return 0;
   } catch (const std::exception& error) {
     std::cerr << "AbyssLock: " << error.what() << "\n";
