@@ -22,7 +22,7 @@ Build a fresh protected artifact for every seed. AbyssLock transforms local iden
 - LZW payload compression with a reset marker for large sources
 - Local identifier mangling that avoids keywords and preserves member access
 - Optional anti-debug hook detection
-- Deterministic builds with `--seed`, or a fresh seed when omitted
+- A fresh random build seed on every output
 - No network access and no source upload
 
 The runtime is intentionally generated as Luau source so it can be loaded by environments that expose `loadstring`. Protection is not a guarantee against a determined analyst; test every protected build in the target runtime and keep a readable source copy.
@@ -44,12 +44,10 @@ cmake --build build --config Release
 ## Use
 
 ```sh
-./build/abysslock script.luau -o protected.luau
-./build/abysslock script.luau -o protected.luau --seed 917431
-./build/abysslock script.luau --no-mangle
+./build/luatrix script.luau protected.luau
 ```
 
-Each output is self-contained. A seed makes a build reproducible; leaving it out produces a new VM layout.
+Each output is self-contained. Every invocation generates a fresh internal seed, so repeated runs produce different VM layouts.
 
 ## Design notes
 
