@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(abysslock abysslock.cpp)
+add_executable(luatrix abysslock.cpp)
 
 if (MSVC)
   target_compile_options(abysslock PRIVATE /W4 /O2)
