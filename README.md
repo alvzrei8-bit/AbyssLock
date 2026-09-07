@@ -53,7 +53,7 @@ Each output is self-contained. A seed makes a build reproducible; leaving it out
 
 ## Design notes
 
-The compiler is intentionally a single native translation unit. Its front end tokenizes Luau while retaining string and operator boundaries, then performs conservative local-name rewriting. The emitted runtime is a small interpreter with mutable opcode IDs, encoded instruction words, a randomized handler table, and a decompressor-backed constant pool.
+The compiler is intentionally a single native translation unit in `abysslock.cpp`. Its front end tokenizes Luau while retaining string and operator boundaries, then performs conservative local-name rewriting. The emitted runtime is a small interpreter with mutable opcode IDs, encoded instruction words, a randomized handler table, and a decompressor-backed constant pool.
 
 Anti-tamper catches edits to the encoded constant pool and the generated layout. Anti-debug is a best-effort signal check and can be disabled when a target runtime instruments hooks legitimately. Neither option replaces code signing, access control, or server-side authorization.
 
